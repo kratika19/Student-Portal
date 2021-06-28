@@ -123,3 +123,21 @@ def youtube(request):
     return render(request, 'dashboard/youtube.html', {
         'form': youtube_form
     })
+
+
+def todo(request):
+    get_todo = Todo.objects.filter(user=request.user)
+    length = len(get_todo)
+    if length == 0:
+        no_todo = True
+    else:
+        no_todo = False
+    return render(request, 'dashboard/todo.html', {
+        'todos': get_todo,
+        'no_todo': no_todo
+    })
+#
+#
+# def delete_todo(request, pk):
+#     Todo.objects.get(id=pk).delete()
+#     return redirect('todo')
