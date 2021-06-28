@@ -19,3 +19,7 @@ class HomeworkForm(forms.ModelForm):
         model = Homework
         widgets = {'due_date': DateInput()}
         exclude = ['user']
+
+
+class DashboardForm(forms.Form):
+    text = forms.CharField(max_length=500, label='Enter Your Search')

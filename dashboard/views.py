@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.views import generic
 from .forms import *
+from youtubesearchpython import VideosSearch
 
 
 # from .models import Homework
@@ -86,3 +87,39 @@ def update_homework(request, pk=None):
 def delete_homework(request, pk):
     Homework.objects.get(id=pk).delete()
     return redirect('homework')
+
+
+def youtube(request):
+    if request.method == 'POST':
+        youtube_form = DashboardForm()
+        text = request.POST['text']
+        video = VideosSearch(text, limit=10)
+        result_list = []
+        # print(video.result()['result'])
+        for i in video.result()['result']:
+            result_dict = {
+                'input': text,
+                'title': i['title'],
+                'duration': i['duration'],
+                'thumbnail': i['thumbnails'][0]['url'],
+                'channel': i['channel']['name'],
+                'link': i['link'],
+                'views': i['viewCount']['short'],
+                'published': i['publishedTime']
+            }
+            print(result_dict)
+            desc = ''
+            if i['descriptionSnippet']:
+                for j in i['descriptionSnippet']:
+                    desc += j['text']
+            result_dict['description'] = desc
+            result_list.append(result_dict)
+        return render(request, 'dashboard/youtube.html', {
+            'form': youtube_form,
+            'results': result_list
+        })
+    else:
+        youtube_form = DashboardForm()
+    return render(request, 'dashboard/youtube.html', {
+        'form': youtube_form
+    })
