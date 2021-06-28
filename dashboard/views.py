@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.views import generic
 from .forms import *
+from .models import Homework
 
 
 # Create your views here.
@@ -36,3 +37,16 @@ def delete_note(request, pk=None):
 class NotesDetailView(generic.DetailView):
     model = Notes
     context_object_name = 'note'
+
+
+def homework(request):
+    all_homework = Homework.objects.filter(user=request.user)
+    left_homework = Homework.objects.filter(user=request.user, is_finished=False)
+    if len(left_homework) == 0:
+        done = True
+    else:
+        done = False
+    return render(request, 'dashboard/homework.html', {
+        'homeworks': all_homework,
+        'done': done
+    })
