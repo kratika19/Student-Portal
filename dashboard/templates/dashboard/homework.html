@@ -1,5 +1,6 @@
 {% extends 'dashboard/base.html' %}
 {% load static %}
+{% load crispy_forms_tags %}
 {% block content %}
 
     <div class="container">
@@ -26,7 +27,7 @@
                         <td>{{ homework.due }}</td>
 
                         <td>
-                            <a href="#">
+                            <a href="{% url 'update_homework' homework.id %}">
                                 <div class="form-check">
                                     {% if homework.is_finished == True %}
                                         <input class="form-check-input" type="checkbox" value="" checked>
@@ -39,7 +40,7 @@
                                 </div>
                             </a>
                         </td>
-                        <td><a href="#"><i class="fa fa-trash fa-2x"></i></a></td>
+                        <td><a href="{% url 'delete_homework' homework.id %}"><i class="fa fa-trash fa-2x"></i></a></td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -51,14 +52,18 @@
         {% endif %}
     </div>
     <div class=" container">
-        <form method="POST">
+        <form method="POST" action="{% url 'homework' %}">
+            {% csrf_token %}
             <fieldset class="form-group">
                 <legend class="border-bottom mb-4">Create Homework</legend>
             </fieldset>
+            {{ homework_form|crispy }}
             <div class="form-group">
-                <button href="" class="btn btn-outline-info" type="submit">
-                    Create
-                </button>
+                <a href="">
+                    <button class="btn btn-outline-info" type="submit">
+                        Create
+                    </button>
+                </a>
             </div>
         </form>
     </div>
