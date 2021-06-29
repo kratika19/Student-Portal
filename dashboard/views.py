@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.views import generic
 from .forms import *
 from youtubesearchpython import VideosSearch
-import requests
+import requests, wikipedia
 
 
 # Create your views here.
@@ -235,3 +235,29 @@ def dictionary(request):
             'form': dictionary_form
         }
     return render(request, 'dashboard/dictionary.html', context)
+
+
+def wiki(request):
+    if request.method == 'POST':
+        wiki_form = DashboardForm(request.POST)
+        text = request.POST['text']
+        page = wikipedia.page(text)
+        try:
+            context = {
+                'form': wiki_form,
+                'title': page.title,
+                'link': page.url,
+                'summary': page.summary
+            }
+        except wikipedia.exceptions.PageError as e:
+            print(e.options)
+            context = {
+                "form": wiki_form
+            }
+        return render(request, 'dashboard/wiki.html', context)
+
+    else:
+        wiki_form = DashboardForm()
+    return render(request, 'dashboard/wiki.html', {
+        'form': wiki_form
+    })
