@@ -336,3 +336,24 @@ def register(request):
         return render(request, 'dashboard/register.html', {
             'form': form
         })
+
+
+def profile(request):
+    not_done_todo = Todo.objects.filter(user=request.user, status=False)
+    not_done_homework = Homework.objects.filter(user=request.user, is_finished=False)
+    if len(not_done_homework) == 0:
+        homework_done = True
+    else:
+        homework_done = False
+
+    if len(not_done_todo) == 0:
+        todo_done = True
+    else:
+        todo_done = False
+
+    return render(request, 'dashboard/profile.html', {
+        'todos': not_done_todo,
+        'homeworks': not_done_homework,
+        'homework_done': homework_done,
+        'todo_done': todo_done
+    })
