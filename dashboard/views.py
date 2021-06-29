@@ -336,3 +336,4 @@ def register(request):
     return render(request, 'dashboard/register.html', {
         'form': form
     })
+
