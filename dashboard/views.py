@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.views import generic
 from .forms import *
 from youtubesearchpython import VideosSearch
+import requests
 
 
 # Create your views here.
@@ -169,7 +170,31 @@ def delete_todo(request, pk=None):
 
 
 def books(request):
-    bookForm = DashboardForm()
-    return render(request, 'dashboard/books.html',{
-        'form': bookForm
+    if request.method == 'POST':
+        book_form = DashboardForm()
+        text = request.POST['text']
+        url = "https://www.googleapis.com/books/v1/volumes?q=" + text
+        r = requests.get(url)
+        answer = r.json()
+        result_list = []
+        for i in range(10):
+            result_dict = {
+                'title': answer['items'][i]['volumeInfo']['title'],
+                'subtitle': answer['items'][i]['volumeInfo'].get('subtitle'),
+                'description': answer['items'][i]['volumeInfo'].get('description'),
+                'count': answer['items'][i]['volumeInfo'].get('pageCount'),
+                'categories': answer['items'][i]['volumeInfo'].get('categories'),
+                'rating': answer['items'][i]['volumeInfo'].get('pageRating'),
+                'thumbnail': answer['items'][i]['volumeInfo'].get('imageLinks'),
+                'preview': answer['items'][i]['volumeInfo'].get('previewLink')
+            }
+            result_list.append(result_dict)
+        return render(request, 'dashboard/books.html', {
+            'form': book_form,
+            'results': result_list
+        })
+    else:
+        book_form = DashboardForm()
+    return render(request, 'dashboard/books.html', {
+        'form': book_form
     })
