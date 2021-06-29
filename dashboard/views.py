@@ -4,6 +4,7 @@ from django.views import generic
 from .forms import *
 from youtubesearchpython import VideosSearch
 import requests, wikipedia
+from django.contrib.auth.decorators import login_required
 
 
 # Create your views here.
@@ -11,7 +12,7 @@ import requests, wikipedia
 def home(request):
     return render(request, 'dashboard/home.html')
 
-
+@login_required
 def notes(request):
     if request.method == 'POST':
         form = NotesForm(request.POST)
@@ -29,7 +30,7 @@ def notes(request):
         'note_form': form
     })
 
-
+@login_required
 def delete_note(request, pk=None):
     Notes.objects.get(id=pk).delete()
     return redirect("notes")
@@ -40,6 +41,7 @@ class NotesDetailView(generic.DetailView):
     context_object_name = 'note'
 
 
+@login_required
 def homework(request):
     if request.method == 'POST':
         form = HomeworkForm(request.POST)
@@ -71,6 +73,7 @@ def homework(request):
     })
 
 
+@login_required
 def update_homework(request, pk=None):
     get_homework = Homework.objects.get(id=pk)
     if get_homework.is_finished:
@@ -82,6 +85,7 @@ def update_homework(request, pk=None):
     return redirect('homework')
 
 
+@login_required
 def delete_homework(request, pk):
     Homework.objects.get(id=pk).delete()
     return redirect('homework')
@@ -123,6 +127,7 @@ def youtube(request):
     })
 
 
+@login_required
 def todo(request):
     if request.method == 'POST':
         todoform = TodoForm(request.POST)
@@ -153,6 +158,7 @@ def todo(request):
     })
 
 
+@login_required
 def update_todo(request, pk=None):
     todo = Todo.objects.get(id=pk)
     if todo.status == True:
@@ -164,6 +170,7 @@ def update_todo(request, pk=None):
     return redirect('todo')
 
 
+@login_required
 def delete_todo(request, pk=None):
     Todo.objects.get(id=pk).delete()
     return redirect('todo')
@@ -338,6 +345,7 @@ def register(request):
         })
 
 
+@login_required
 def profile(request):
     not_done_todo = Todo.objects.filter(user=request.user, status=False)
     not_done_homework = Homework.objects.filter(user=request.user, is_finished=False)
