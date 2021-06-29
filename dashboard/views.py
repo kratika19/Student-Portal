@@ -146,10 +146,10 @@ def todo(request):
     else:
         no_todo = False
     return render(request, 'dashboard/todo.html', {
-            'todos': get_todo,
-            'no_todo': no_todo,
-            'form': todoform
-        })
+        'todos': get_todo,
+        'no_todo': no_todo,
+        'form': todoform
+    })
 
 
 def update_todo(request, pk=None):
@@ -166,3 +166,10 @@ def update_todo(request, pk=None):
 def delete_todo(request, pk=None):
     Todo.objects.get(id=pk).delete()
     return redirect('todo')
+
+
+def books(request):
+    bookForm = DashboardForm()
+    return render(request, 'dashboard/books.html',{
+        'form': bookForm
+    })
