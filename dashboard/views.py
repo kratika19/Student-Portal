@@ -5,9 +5,6 @@ from .forms import *
 from youtubesearchpython import VideosSearch
 
 
-# from .models import Homework
-
-
 # Create your views here.
 
 def home(request):
@@ -126,6 +123,22 @@ def youtube(request):
 
 
 def todo(request):
+    if request.method == 'POST':
+        todoform = TodoForm(request.POST)
+        if todoform.is_valid():
+            try:
+                finish = request.POST['status']
+                if finish == 'on':
+                    finished = True
+                else:
+                    finished = False
+            except:
+                finished = False
+            new_todo = Todo(user=request.user, title=request.POST['title'], status=finished)
+            new_todo.save()
+            messages.success(request, f'Todo is added by {request.user.username} successfully!')
+    else:
+        todoform = TodoForm()
     get_todo = Todo.objects.filter(user=request.user)
     length = len(get_todo)
     if length == 0:
@@ -133,11 +146,23 @@ def todo(request):
     else:
         no_todo = False
     return render(request, 'dashboard/todo.html', {
-        'todos': get_todo,
-        'no_todo': no_todo
-    })
-#
-#
-# def delete_todo(request, pk):
-#     Todo.objects.get(id=pk).delete()
-#     return redirect('todo')
+            'todos': get_todo,
+            'no_todo': no_todo,
+            'form': todoform
+        })
+
+
+def update_todo(request, pk=None):
+    todo = Todo.objects.get(id=pk)
+    if todo.status == True:
+        todo.status = False
+    else:
+        todo.status = True
+
+    todo.save()
+    return redirect('todo')
+
+
+def delete_todo(request, pk=None):
+    Todo.objects.get(id=pk).delete()
+    return redirect('todo')
